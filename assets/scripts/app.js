@@ -122,15 +122,16 @@ class ProductItem extends Component {
 
 
 class ProductList extends Component{
-    products = [];
+    #products = [];
 
     constructor(renderHookId) { 
-        super(renderHookId);
+        super(renderHookId, false);
+        this.render();
          this.fetchProducts();
     }
 
     fetchProducts(){
-        this.products =[ 
+        this.#products =[ 
             new Product(
             'A pillow',
             'https://www.potterybarn.com/pbimgs/ab/images/dp/wcm/201936/4102/img80c.jpg',
@@ -148,14 +149,14 @@ class ProductList extends Component{
     this.renderProducts();
     }
     renderProducts(){
-        for (const prod of this.products) {
+        for (const prod of this.#products) {
             new ProductItem(prod, 'prod-list')
           }
     }
 
     render() {
         this.createRootElement('ul', 'product-list', [new ElementAttribute('id', 'prod-list')]);
-       if(this.products && this.products.length > 0){
+       if(this.#products && this.#products.length > 0){
            this.renderProducts();
        }
     }
