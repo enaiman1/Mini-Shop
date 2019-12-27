@@ -12,30 +12,37 @@ class Product {
     }
 }
 
-class ShoppingCart{
-    items=[];
-    render(){
+class ShoppingCart {
+    items = [];
+
+    addProduct(product) {
+        this.items.push(product);
+        this.totalOutput.innerHTML = `<h2>Total: \$${1}</h2>  `;
+
+    }
+
+    render() {
         const cartEl = document.createElement('section');
         cartEl.innerHTML = `
         <h2>Total: \$${0}</h2>
         <button>Order Now!</button>
         `;
-        cartEl.className="cart";
+        cartEl.className = "cart";
+        this.totalOutput= cartEl.querySelector('h2');
         return cartEl;
     }
 }
 
-class ProductItem{
-    constructor(product){
+class ProductItem {
+    constructor(product) {
         this.product = product;
     }
 
-    addToCart(){
-console.log("Adding product to cart..")
-console.log(this.product)
+    addToCart() {
+       App.addProductToCart(this.product);
     }
 
-    render(){
+    render() {
         const prodEl = document.createElement('li');
         prodEl.className = "product-item";
         prodEl.innerHTML = `
@@ -49,20 +56,20 @@ console.log(this.product)
                 </div>
             </div>
             `;
-            const addCartButton = prodEl.querySelector('button');
-            addCartButton.addEventListener('click',this.addToCart.bind(this) )
-            return prodEl
+        const addCartButton = prodEl.querySelector('button');
+        addCartButton.addEventListener('click', this.addToCart.bind(this))
+        return prodEl
     }
 }
 
 
-class ProductList{
+class ProductList {
     products = [new Product(
         'A pillow',
         'https://www.potterybarn.com/pbimgs/ab/images/dp/wcm/201936/4102/img80c.jpg',
         'A soft pillow',
         19.99
-        ),
+    ),
 
     new Product(
         'A carpet',
@@ -71,26 +78,26 @@ class ProductList{
         89.99
     )];
 
-    constructor(){}
+    constructor() { }
 
-    render(){
-    const prodList = document.createElement('ul');
-    prodList.className = "product-list"
-    for (const prod of this.products) {
-       const productItem = new ProductItem(prod)
-       const prodEl = productItem.render();
-        prodList.append(prodEl)
+    render() {
+        const prodList = document.createElement('ul');
+        prodList.className = "product-list"
+        for (const prod of this.products) {
+            const productItem = new ProductItem(prod)
+            const prodEl = productItem.render();
+            prodList.append(prodEl)
+        }
+        return prodList;
     }
-    return prodList;
-}
 };
 
 class Shop {
-    render(){
+    render() {
         const renderHook = document.getElementById('app');
 
-        const cart = new ShoppingCart();
-        const cartEl = cart.render();
+        this.cart = new ShoppingCart();
+        const cartEl =this.cart.render();
         const productList = new ProductList();
         const prodListEl = productList.render();
 
@@ -99,6 +106,19 @@ class Shop {
     }
 }
 
-const shop = new Shop()
-shop.render()
+class App {
+    static init() {
+        const shop = new Shop();
+        shop.render();
+        this.cart=shop.cart;
+      
+    }
+    static addProductToCart(product){
+        this.cart.addProduct(product);
+    }
+}
+
+App.init();
+
+
 
