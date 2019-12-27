@@ -20,9 +20,13 @@ class ElementAttribute {
 }
 
 class Component{
-constructor(renderHookId){
+constructor(renderHookId, shouldRender=true){
     this.hookId=renderHookId;
+    if(shouldRender){
+        this.render();
+    }
 }
+render(){}
 
     createRootElement(tag, cssClasses, attributes){
         const rootElement = document.createElement(tag);
@@ -79,8 +83,9 @@ class ShoppingCart extends Component {
 
 class ProductItem extends Component {
     constructor(product, renderHookId) {
-        super(renderHookId)
+        super(renderHookId, false);
         this.product = product;
+        this.render();
     }
 
     addToCart() {
@@ -109,40 +114,53 @@ class ProductItem extends Component {
 
 
 class ProductList extends Component{
-    products = [
-        new Product(
-        'A pillow',
-        'https://www.potterybarn.com/pbimgs/ab/images/dp/wcm/201936/4102/img80c.jpg',
-        'A soft pillow',
-        19.99
-    ),
-
-    new Product(
-        'A carpet',
-        'https://mobileimages.lowes.com/product/converted/840712/840712131483.jpg?size=xl',
-        'A carpet which you might like - or not',
-        89.99
-    )];
+    products = [];
 
     constructor(renderHookId) { 
-        super(renderHookId)
+        super(renderHookId);
+         this.fetchProducts();
+    }
+
+    fetchProducts(){
+        this.products =[ 
+            new Product(
+            'A pillow',
+            'https://www.potterybarn.com/pbimgs/ab/images/dp/wcm/201936/4102/img80c.jpg',
+            'A soft pillow',
+            19.99
+        ),
+    
+        new Product(
+            'A carpet',
+            'https://mobileimages.lowes.com/product/converted/840712/840712131483.jpg?size=xl',
+            'A carpet which you might like - or not',
+            89.99
+        )
+    ];
+    this.renderProducts();
+    }
+    renderProducts(){
+        for (const prod of this.products) {
+            new ProductItem(prod, 'prod-list')
+          }
     }
 
     render() {
         this.createRootElement('ul', 'product-list', [new ElementAttribute('id', 'prod-list')]);
-        for (const prod of this.products) {
-            const productItem = new ProductItem(prod, 'prod-list')
-            productItem.render();
-        }
+       if(this.products && this.products.length > 0){
+           this.renderProducts();
+       }
     }
 };
 
-class Shop {
+class Shop extends Component{
+    constructor(){
+        super();
+    }
     render() {
         this.cart = new ShoppingCart('app');
-        this.cart.render();
-        const productList = new ProductList('app');
-        productList.render();
+       new ProductList('app');
+        
     }
 }
 
@@ -151,7 +169,6 @@ class App {
 
     static init() {
         const shop = new Shop();
-        shop.render();
         this.cart=shop.cart;
       
     }
